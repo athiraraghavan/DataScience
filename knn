@@ -1,0 +1,74 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+data=pd.read_csv('iris_csv.csv')
+data.head()
+
+OUTPUT
+
+sepallength	sepalwidth	petallength	petalwidth	class
+0	5.1	3.5	1.4	0.2	Iris-setosa
+1	4.9	3.0	1.4	0.2	Iris-setosa
+2	4.7	3.2	1.3	0.2	Iris-setosa
+3	4.6	3.1	1.5	0.2	Iris-setosa
+4	5.0	3.6	1.4	0.2	Iris-setosa
+x=data.iloc[:,:-1].values
+y=data.iloc[:,4].values
+
+
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.20)
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+scaler.fit(x_train)
+
+x_train=scaler.transform(x_train)
+x_test=scaler.transform(x_test)
+from sklearn.neighbors import KNeighborsClassifier
+classifier=KNeighborsClassifier(n_neighbors=5)
+classifier.fit(x_train,y_train)
+
+OUTPUT
+
+KNeighborsClassifier()
+
+
+y_pred=classifier.predict(x_test)
+from sklearn.metrics import classification_report, confusion_matrix
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
+
+OUTPUT
+[[10  0  0]
+ [ 0  9  1]
+ [ 0  1  9]]
+                 precision    recall  f1-score   support
+
+    Iris-setosa       1.00      1.00      1.00        10
+Iris-versicolor       0.90      0.90      0.90        10
+ Iris-virginica       0.90      0.90      0.90        10
+
+       accuracy                           0.93        30
+      macro avg       0.93      0.93      0.93        30
+   weighted avg       0.93      0.93      0.93        30
+
+error = []
+
+
+for i in range(1, 40):
+    knn = KNeighborsClassifier(n_neighbors=i)
+    knn.fit(x_train, y_train)
+    pred_i = knn.predict(x_test)
+    error.append(np.mean(pred_i != y_test))
+    
+    
+plt.figure(figsize=(12, 6))
+plt.plot(range(1, 40), error, color='red', linestyle='dashed', marker='o',
+         markerfacecolor='blue', markersize=10)
+plt.title('Error Rate K Value')
+plt.xlabel('K Value')
+plt.ylabel('Mean Error')
+Text(0, 0.5, 'Mean Error')
+
+ 
